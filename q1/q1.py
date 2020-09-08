@@ -39,6 +39,7 @@ data_q = data_q[
             ].sort_values(by=["cost_per_item", "total_items"])
 
 print("New count: ", data_q.iloc[:, 0].count(), end="\n\n")
+print("New mean:", data_q.mean(), sep="\n", end="\n\n")
 
 # now to compare with earlier:
 # box-plot the quantitative data
