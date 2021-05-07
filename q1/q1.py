@@ -1,5 +1,8 @@
-import pandas as pd
+# code adapted directly from my previous Shopify internship application for Winter 2021
+# this script should be run from the directory containing the dataset CSV
+
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import stats
 
 DATA_PATH = "2019 Winter Data Science Intern Challenge Data Set.csv"
@@ -21,22 +24,30 @@ data_q.plot(subplots=True, kind="box")
 # scatter-plot the order totals vs. item counts
 data_q.plot("order_amount", "total_items", kind="scatter")
 
-# create a new column to determine product 
+# create a new column to determine product
 data_q = data_q.assign(cost_per_item=data_q["order_amount"] / data_q["total_items"])
 
-data_q.drop_duplicates(subset=["order_amount", "cost_per_item"]).plot("order_amount", "cost_per_item", kind="scatter")
+# scatter-plot the order totals vs. the costs per item
+data_q.drop_duplicates(subset=["order_amount", "cost_per_item"]).plot(
+    "order_amount", "cost_per_item", kind="scatter"
+)
 
 # check that product prices are truly unique (they are)
 print(
     "Unique shop_id/cost_per_item combos:",
-    pd.concat([data["shop_id"], data_q["cost_per_item"]], axis=1).drop_duplicates(subset=["shop_id"]).iloc[:, 0].count(),
-    sep="\n", end="\n\n")
+    pd.concat([data["shop_id"], data_q["cost_per_item"]], axis=1)
+    .drop_duplicates(subset=["shop_id"])
+    .iloc[:, 0]
+    .count(),
+    sep="\n",
+    end="\n\n",
+)
 
 # remove order records > 3.5 standard deviations away from mean in either quantitative attribute
 data_q = data_q[
-                (pd.Series(data_q["cost_per_item"].pipe(stats.zscore)).abs() <= 3.5)
-                & (pd.Series(data_q["total_items"].pipe(stats.zscore)).abs() <= 3.5)
-            ].sort_values(by=["cost_per_item", "total_items"])
+    (pd.Series(data_q["cost_per_item"].pipe(stats.zscore)).abs() <= 3.5)
+    & (pd.Series(data_q["total_items"].pipe(stats.zscore)).abs() <= 3.5)
+].sort_values(by=["cost_per_item", "total_items"])
 
 print("New count: ", data_q.iloc[:, 0].count(), end="\n\n")
 print("New mean:", data_q.mean(), sep="\n", end="\n\n")
